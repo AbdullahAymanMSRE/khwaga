@@ -1,0 +1,172 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+  carPosts      CarPost[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+}
+
+model CarMake {
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  imageUrl  String?
+  nameAr    String?
+  country   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  carModels CarModel[]
+
+  @@unique([name])
+}
+
+model CarModel {
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  nameAr    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  carMakeId Int
+  carMake   CarMake @relation(fields: [carMakeId], references: [id], onDelete: Cascade)
+
+  carPosts CarPost[]
+}
+
+model CarBodyType {
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  nameAr    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  carPosts CarPost[]
+}
+
+model CarFuelType {
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  nameAr    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  carPosts CarPost[]
+}
+
+model CarTransmission {
+  id        Int      @id @default(autoincrement())
+  name      String
+  slug      String   @unique
+  nameAr    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  carPosts CarPost[]
+}
+
+model CarPostImage {
+  id        Int      @id @default(autoincrement())
+  url       String
+  isMain    Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  carPostId Int
+  carPost   CarPost @relation(fields: [carPostId], references: [id], onDelete: Cascade)
+}
+
+model CarPost {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?  @db.Text
+  price       Int
+  year        Int
+  mileage     Int
+  color       String
+  engineSize  Int?
+  doors       Int?
+  seats       Int?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  carModelId Int
+  carModel   CarModel @relation(fields: [carModelId], references: [id])
+
+  carBodyTypeId Int?
+  carBodyType   CarBodyType? @relation(fields: [carBodyTypeId], references: [id])
+
+  carFuelTypeId Int?
+  carFuelType   CarFuelType? @relation(fields: [carFuelTypeId], references: [id])
+
+  carTransmissionId Int
+  carTransmission   CarTransmission @relation(fields: [carTransmissionId], references: [id])
+
+  carPostImages CarPostImage[]
+}

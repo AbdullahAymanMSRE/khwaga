@@ -1,0 +1,23 @@
+{
+  "logo": "Khwaga",
+  "sell-my-car": "Sell My Car",
+  "Metadata": {
+    "title": "Khwaga",
+    "description": "Khwaga is a website for buying and selling cars"
+  },
+  "Home": {
+    "title": "Find you next car",
+    "search": "Search  by make, model, or keyword",
+    "filters": {
+      "make": "Make",
+      "model": "Model",
+      "bodyType": "Body Type",
+      "fuelType": "Fuel Type",
+      "transmission": "Transmission",
+      "search": "Search",
+      "noResults": "No results found"
+    },
+    "mileage": "miles",
+    "currency": "EGP"
+  }
+}
